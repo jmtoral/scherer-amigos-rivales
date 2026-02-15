@@ -85,5 +85,5 @@ El espectro se define de la siguiente manera:
 ---
 
 **Autor**: [Manuel Toral](https://github.com/jmtoral)  
-**Co-autor (IA)**: Este proyecto, incluyendo el código, el análisis y esta documentación, fue asistido y generado por un agente de Inteligencia Artificial (Google DeepMind).
+**Co-autor (IA)**: Este proyecto, incluyendo el código, el análisis y esta documentación, fue asistido y generado por agentes de Inteligencia Artificial (Google DeepMind y Claude Code).
 **Licencia**: MIT
