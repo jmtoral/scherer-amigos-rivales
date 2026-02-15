@@ -42,18 +42,37 @@ axisGroup.select(".domain").attr("stroke", "#ddd").attr("stroke-width", 2);
 axisGroup.selectAll(".tick line").attr("stroke", "#ddd").attr("y2", -10); // ticks upward slightly
 axisGroup.selectAll("text").attr("fill", "#999").attr("font-size", "12px").attr("dy", "1.5em");
 
+// --- Add Axis Labels (Background Layer) ---
+svg.append("text")
+    .attr("x", margin.left)
+    .attr("y", height / 2 + 50)
+    .attr("text-anchor", "start")
+    .attr("fill", "#a50f15")
+    .attr("font-weight", "bold")
+    .style("pointer-events", "none") // Prevent blocking hover
+    .text("ENEMIGOS (-5)");
+
+svg.append("text")
+    .attr("x", width - margin.right)
+    .attr("y", height / 2 + 50)
+    .attr("text-anchor", "end")
+    .attr("fill", "#006d2c")
+    .attr("font-weight", "bold")
+    .style("pointer-events", "none") // Prevent blocking hover
+    .text("AMIGOS (+5)");
+
 // --- Process Data for Simulation ---
 // Add initial x, y and radius
-// Radius based on importance? For now, uniform or slightly varied by page count perhaps?
-// Let's use page count length as proxy for importance/size
-const nodes = personasData.map(d => {
+// Radius based on page count
+const nodes = personasData.map((d, i) => {
     // Rough estimate of mentions: split by commas + 1
     const mentionCount = d.pages.toString().split(',').length;
     // Base radius 5, max 15
-    const r = Math.min(5 + mentionCount * 1.5, 20); 
-    
+    const r = Math.min(5 + mentionCount * 1.5, 20);
+
     return {
         ...d,
+        ranking: i, // Derive ranking from array order
         radius: r,
         x: xScale(d.score), // Initial target x
         y: height / 2       // Initial y
@@ -74,7 +93,7 @@ simulation.restart();
 // --- Tooltip ---
 const tooltip = d3.select("#tooltip");
 
-// --- Draw Nodes ---
+// --- Draw Nodes (Foreground Layer) ---
 const nodeElements = svg.append("g")
     .selectAll("circle")
     .data(nodes)
@@ -91,7 +110,7 @@ const nodeElements = svg.append("g")
 
 // --- Interaction ---
 nodeElements
-    .on("mouseenter", function(event, d) {
+    .on("mouseenter", function (event, d) {
         // Highlight node
         d3.select(this)
             .transition().duration(200)
@@ -111,12 +130,12 @@ nodeElements
                 <div class="desc">${d.description}</div>
             `);
     })
-    .on("mousemove", function(event) {
+    .on("mousemove", function (event) {
         tooltip
             .style("left", (event.pageX + 15) + "px")
             .style("top", (event.pageY - 15) + "px");
     })
-    .on("mouseleave", function(event, d) {
+    .on("mouseleave", function (event, d) {
         // Reset node
         d3.select(this)
             .transition().duration(200)
@@ -137,29 +156,10 @@ simulation.on("tick", () => {
 const searchBox = document.getElementById("search-box");
 searchBox.addEventListener("input", (e) => {
     const term = e.target.value.toLowerCase();
-    
+
     nodeElements.style("opacity", d => {
         if (term === "") return 1;
         return d.name.toLowerCase().includes(term) ? 1 : 0.1;
     });
-    
-    // Optional: Zoom to node if exact match? Maybe too complex for now.
 });
-
-// --- Add Axis Labels ---
-svg.append("text")
-    .attr("x", margin.left)
-    .attr("y", height / 2 + 50)
-    .attr("text-anchor", "start")
-    .attr("fill", "#a50f15")
-    .attr("font-weight", "bold")
-    .text("ENEMIGOS (-5)");
-
-svg.append("text")
-    .attr("x", width - margin.right)
-    .attr("y", height / 2 + 50)
-    .attr("text-anchor", "end")
-    .attr("fill", "#006d2c")
-    .attr("font-weight", "bold")
-    .text("AMIGOS (+5)");
 
