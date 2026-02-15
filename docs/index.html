@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigos o Rivales: Julio Scherer Ibarra</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Fonts for premium feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Data Source -->
+    <script src="data.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Amigos o Rivales</h1>
+            <h2>El espectro de relaciones de <span class="highlight">Julio Scherer Ibarra</span></h2>
+            <p class="subtitle">Basado en sus memorias <em>"Ni venganza ni perdón"</em></p>
+        </header>
+
+        <div class="legend-container">
+            <div class="legend-item enemy">
+                <span class="dot" style="background: #a50f15;"></span> Enemigos (-5)
+            </div>
+            <div class="legend-bar"></div>
+            <div class="legend-item friend">
+                <span class="dot" style="background: #006d2c;"></span> Amigos (+5)
+            </div>
+        </div>
+
+        <div id="chart-container">
+            <!-- D3 Chart renders here -->
+        </div>
+
+        <div id="tooltip" class="tooltip hidden">
+            <!-- Tooltip content -->
+        </div>
+
+        <div class="controls">
+            <input type="text" id="search-box" placeholder="Buscar personaje...">
+        </div>
+
+        <footer>
+            <p>Análisis realizado con Inteligencia Artificial. <a
+                    href="https://github.com/jmtoral/scherer-amigos-rivales">Ver metodología en GitHub.</a></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

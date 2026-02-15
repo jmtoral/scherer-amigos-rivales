@@ -1,0 +1,23 @@
+# Data & Inputs
+input/
+output/
+temp_pages/
+
+# Environment
+.env
+.venv
+env/
+venv/
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

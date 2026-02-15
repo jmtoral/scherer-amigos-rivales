@@ -1,0 +1,37 @@
+Lee el PDF que está en input/ (las memorias de Julio Scherer Ibarra).
+Es un documento largo (~300 páginas), así que procésalo por partes.
+Tu tarea:
+
+Extrae el texto completo del PDF página por página usando pdfplumber.
+Identifica a TODAS las personas reales que Scherer menciona.
+
+Consolida variantes del mismo nombre (ej: "AMLO" y "López Obrador" = misma persona).
+Ignora instituciones, solo personas.
+
+
+Para cada persona, analiza qué opina Scherer de ella basándote
+estrictamente en lo que dice el texto. Clasifica con UNA palabra:
+
+Desprecio / Hostilidad / Crítica / Desconfianza / Indiferencia /
+Neutral / Cordialidad / Aprecio / Admiración / Lealtad / Devoción
+
+
+Asigna una puntuación de -5 a 5 donde:
+
+-5 = lo detesta profundamente
+0 = neutral
+5 = máxima estima
+
+
+Escribe una descripción breve (1-2 oraciones) explicando POR QUÉ
+Scherer piensa así de esa persona, con referencia a las páginas.
+Genera un archivo Excel llamado "Amigos o Rivales de Julio Scherer Ibarra.xlsx" con:
+
+Columnas: Ranking | Nombre | Opinión | Puntuación | Descripción | Páginas
+Ordenado de puntuación más baja (más odiado) a más alta (más querido)
+Formato: rojo para negativos, verde para positivos, encabezados en negritas
+Una hoja extra "Metodología" explicando los criterios usados
+
+
+
+Guarda el resultado en output/

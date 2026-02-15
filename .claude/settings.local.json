@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Bash(conda --version:*)",
+      "Bash(conda create:*)",
+      "Bash(conda run:*)",
+      "Bash(PYTHONUTF8=1 \"C:/Users/User/anaconda3/envs/scherer/python.exe\":*)"
+    ]
+  }
+}
