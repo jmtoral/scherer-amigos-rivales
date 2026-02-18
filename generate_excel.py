@@ -12,12 +12,15 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # =============================================================================
 # CONSOLIDATED DATA from all 15 chunks (pages 1-300)
-# Each entry: (Name, Opinion_word, Score, Description, Pages)
+# Each entry: (Name, Opinion_word, Score, Description, Pages, Weight)
 #
 # Opinion scale:
 # Desprecio(-5), Hostilidad(-4), Crítica(-3), Desconfianza(-2),
 # Indiferencia(-1), Neutral(0), Cordialidad(1), Aprecio(2),
 # Admiración(3), Lealtad(4), Devoción(5)
+#
+# Weight (Peso narrativo): based on pages dedicated to the person
+# Alta = 15+ pages, Media = 5-14 pages, Baja = 1-4 pages
 # =============================================================================
 
 personas = [
@@ -27,19 +30,19 @@ personas = [
      "27-32, 203, 263-264, 284"),
 
     ("Jesús Ramírez Cuevas", "Desprecio", -5,
-     "Lo califica de 'gran manipulador', 'personaje espantoso' que 'hizo mucho daño al Gobierno'. Lo acusa de operar la mañanera a su conveniencia, filtrar rumores, crear estructura mediática ilegítima, y reunirse con 'el rey del huachicol'. Su nombre aparece en documentos judiciales de EE.UU.",
+     "Lo califica de 'gran manipulador', 'personaje espantoso' que 'hizo mucho daño al Gobierno'. Lo acusa de operar la mañanera a su conveniencia, filtrar rumores, crear estructura mediática ilegítima, y reunirse con 'el rey del huachicol'. Asesoró la desastrosa defensa del T-MEC sobre glifosato y maíz transgénico sin tener formación legal, provocando un 'revés histórico para la soberanía alimentaria'. Convenció al presidente junto con Álvarez-Buylla de prohibir el glifosato sin sustituto, dañando gravemente la agricultura. Su nombre aparece en documentos judiciales de EE.UU.",
      "89, 127, 197-200, 201-221, 249, 271, 284"),
 
     ("Alejandro Gertz Manero", "Desprecio", -5,
-     "Lo acusa de estar 'detrás de la persecución jurídica' en su contra, de actuar 'como extorsionador', de fabricar escándalos fallidos desde la FGR. Le dijo 'usted optó por tener fiscal enemigo'. Compara su lógica de chantaje con la de Gil Díaz.",
+     "Lo acusa de estar 'detrás de la persecución jurídica' en su contra, de actuar 'como extorsionador', de fabricar escándalos fallidos desde la FGR. Le dijo 'usted optó por tener fiscal enemigo'. Compara su lógica de chantaje con la de Gil Díaz. La confrontación con el Fiscal es uno de los hilos conductores de todo el libro.",
      "28, 108, 128-129, 253-258, 262, 276, 284-285"),
 
     ("Hernán Gómez Bruera", "Desprecio", -5,
      "Autor de un 'libro impúdico' y 'miserable', 'plagado de falsedades'. Lo acusa de cometer 'el delito de pornografía infantil' al revelar el caso de una menor. Lo demandó por daño moral.",
      "264, 272-273, 282"),
 
-    ("Paulo Díez Gargari", "Desprecio", -5,
-     "Lo califica de 'aberrante' y 'mercenario'. Lo acusa de difamar sin pruebas, de fraguar un plan con sobornos para revivir una concesión ferroviaria. Lo demandó por daño moral. Le dijo 'que se fuera a la chingada'.",
+    ("Paulo Díez Gargari", "Crítica", -3,
+     "Lo califica de 'aberrante' y 'mercenario'. Lo acusa de difamar sin pruebas, de fraguar un plan con sobornos para revivir una concesión ferroviaria. Lo demandó por daño moral. Le dijo 'que se fuera a la chingada'. [Personaje marginal: aparece solo en las últimas páginas del libro.]",
      "277-282"),
 
     ("Manuel Bartlett", "Hostilidad", -4,
@@ -51,7 +54,7 @@ personas = [
      "94-96"),
 
     ("Hugo López-Gatell", "Hostilidad", -4,
-     "Lo describe como 'personaje que hizo mucho daño', 'comunicador errático', 'funesto'. Lo acusa de impedir pruebas masivas, contradecirse sobre el tapabocas, adueñarse de la Cofepris. Dice que protegerlo fue una 'decisión pésima'.",
+     "Lo describe como 'personaje que hizo mucho daño', 'comunicador errático', 'funesto'. Lo acusa de impedir pruebas masivas, contradecirse sobre el tapabocas, adueñarse de la Cofepris. Dice que protegerlo fue una 'decisión pésima'. Subestimó la pandemia diciendo que 'no era una enfermedad grave', vendió mascarillas a China antes de necesitarlas, predijo máximo 60,000 muertos cuando fueron más de 600,000. Scherer le dedica un capítulo entero ('La pandemia') como ejemplo de la fórmula '90% lealtad, 10% capacidad'.",
      "158, 166-173, 197, 206, 271"),
 
     # --- NEGATIVOS (-3 a -2) ---
@@ -60,7 +63,7 @@ personas = [
      "87, 94-96, 226, 231-233, 250, 270, 276-277"),
 
     ("Elena Álvarez-Buylla", "Crítica", -3,
-     "La califica como 'un desastre desde el principio', 'confrontada con la comunidad científica'. 'Engañó al presidente y nos metió en graves problemas'. 'Quiso meter a la cárcel a los investigadores'.",
+     "La califica como 'un desastre desde el principio', 'confrontada con la comunidad científica'. 'Engañó al presidente y nos metió en graves problemas'. 'Quiso meter a la cárcel a los investigadores'. Junto con Jesús Ramírez, convenció al presidente de prohibir el glifosato sin sustituto viable; el Conacyt bajo su dirección 'no fue capaz de producir el producto que sustituiría al glifosato. Ni siquiera se acercó.' También impulsó la demanda contra el maíz transgénico que se perdió ante el panel del T-MEC.",
      "132-133, 197-199"),
 
     ("Rosario Robles", "Crítica", -3,
@@ -249,7 +252,7 @@ personas = [
      "23, 35"),
 
     ("Esteban Moctezuma", "Cordialidad", 1,
-     "'Muy buen tipo, muy razonable, trabajaba mucho en los diálogos.' Pero no tenía ánimo para empujar proyectos contra la burocracia.",
+     "'Muy buen tipo, muy razonable, trabajaba mucho en los diálogos.' Pero no tenía ánimo para empujar proyectos contra la burocracia. Junto con Scherer, plantearon al presidente conservar el instituto de evaluación educativa (INEE) con sus expertos en libros de texto y material didáctico, pero el presidente 'dijo que no era importante' y lo sustituyó por otro con gente de 'educación alternativa' que 'difícilmente eran expertos en educación'.",
      "107, 129-130, 196"),
 
     # --- POSITIVOS (1 a 2) ---
@@ -294,7 +297,7 @@ personas = [
      "9, 113-114, 132, 136, 170, 177, 186, 206, 218, 239-240, 245"),
 
     ("Víctor Villalobos", "Aprecio", 2,
-     "'Tenía muy claro lo que debía hacer', 'hombre muy eficaz'. Fue el primero en advertir que Álvarez-Buylla sería un desastre. Su consuegro.",
+     "'Tenía muy claro lo que debía hacer', 'hombre muy eficaz'. Fue el primero en advertir que Álvarez-Buylla sería un desastre. Su consuegro. Defendió la inversión en sanidad animal argumentando que 'sin sanidad nos bloquearían la frontera con EE.UU.', pero el presidente 'decía que eso no se necesitaba, que solo era un gastadero de dinero'. 'Y eso fue, finalmente, lo que sucedió': se materializó el riesgo.",
      "121-122, 133, 197"),
 
     ("Santiago Levy", "Aprecio", 2,
@@ -600,6 +603,35 @@ personas = [
 ]
 
 # =============================================================================
+# Calculate narrative weight from page references
+# =============================================================================
+import re
+
+def count_pages(page_str):
+    """Count individual pages from a page reference string like '27-32, 203, 263-264'."""
+    if page_str.startswith("Presente"):
+        return 300  # AMLO: present throughout
+    total = 0
+    for part in page_str.split(","):
+        part = part.strip()
+        match = re.match(r"(\d+)-(\d+)", part)
+        if match:
+            total += int(match.group(2)) - int(match.group(1)) + 1
+        elif re.match(r"\d+", part):
+            total += 1
+    return total
+
+def get_weight(page_str):
+    """Classify narrative weight: Alta (15+), Media (5-14), Baja (1-4)."""
+    n = count_pages(page_str)
+    if n >= 15:
+        return "Alta"
+    elif n >= 5:
+        return "Media"
+    else:
+        return "Baja"
+
+# =============================================================================
 # Sort by score (ascending: most hated first)
 # =============================================================================
 personas.sort(key=lambda x: (x[2], x[0]))
@@ -642,27 +674,30 @@ wrap_align = Alignment(vertical="top", wrap_text=True)
 center_align = Alignment(horizontal="center", vertical="top")
 
 # Headers
-headers = ["Ranking", "Nombre", "Opinión", "Puntuación", "Descripción", "Páginas"]
-col_widths = [9, 30, 14, 13, 75, 22]
+headers = ["Ranking", "Nombre", "Opinión", "Puntuación", "Peso narrativo", "Descripción", "Páginas"]
+col_widths = [9, 30, 14, 13, 16, 75, 22]
 
+col_letters = ["A", "B", "C", "D", "E", "F", "G"]
 for col_idx, (header, width) in enumerate(zip(headers, col_widths), 1):
     cell = ws.cell(row=1, column=col_idx, value=header)
     cell.font = header_font
     cell.fill = header_fill
     cell.alignment = header_align
     cell.border = thin_border
-    ws.column_dimensions[chr(64 + col_idx)].width = width
+    ws.column_dimensions[col_letters[col_idx - 1]].width = width
 
 # Data rows
 for row_idx, (name, opinion, score, desc, pages) in enumerate(personas, 2):
     ranking = row_idx - 1
+    weight = get_weight(pages)
 
     ws.cell(row=row_idx, column=1, value=ranking).alignment = center_align
     ws.cell(row=row_idx, column=2, value=name)
     ws.cell(row=row_idx, column=3, value=opinion).alignment = center_align
     ws.cell(row=row_idx, column=4, value=score).alignment = center_align
-    ws.cell(row=row_idx, column=5, value=desc).alignment = wrap_align
-    ws.cell(row=row_idx, column=6, value=pages).alignment = wrap_align
+    ws.cell(row=row_idx, column=5, value=weight).alignment = center_align
+    ws.cell(row=row_idx, column=6, value=desc).alignment = wrap_align
+    ws.cell(row=row_idx, column=7, value=pages).alignment = wrap_align
 
     # Color coding
     if score <= -4:
@@ -696,7 +731,7 @@ for row_idx, (name, opinion, score, desc, pages) in enumerate(personas, 2):
         fill = neutral_fill
         font = body_font
 
-    for col_idx in range(1, 7):
+    for col_idx in range(1, 8):
         cell = ws.cell(row=row_idx, column=col_idx)
         cell.fill = fill
         cell.font = font
@@ -706,7 +741,7 @@ for row_idx, (name, opinion, score, desc, pages) in enumerate(personas, 2):
 ws.freeze_panes = "A2"
 
 # Auto-filter
-ws.auto_filter.ref = f"A1:F{len(personas) + 1}"
+ws.auto_filter.ref = f"A1:G{len(personas) + 1}"
 
 # --- Sheet 2: Metodología ---
 ws2 = wb.create_sheet("Metodología")
@@ -757,6 +792,34 @@ methodology = [
     "• Verde oscuro: Puntuación 3 (Admiración)",
     "• Verde muy oscuro: Puntuación 4-5 (Lealtad / Devoción)",
     "",
+    "PESO NARRATIVO (columna nueva en v2):",
+    "• Alta: 15 o más páginas dedicadas al personaje (protagonistas del relato)",
+    "• Media: 5-14 páginas (personajes recurrentes)",
+    "• Baja: 1-4 páginas (menciones puntuales o episódicas)",
+    "• Este indicador complementa la puntuación de opinión y permite distinguir",
+    "  entre antagonistas centrales (ej. Ramírez Cuevas, Gertz) y personajes",
+    "  marginales (ej. Paulo Díez, que solo aparece en las últimas páginas).",
+    "",
+    "TEMAS DE POLÍTICA PÚBLICA MENCIONADOS EN EL LIBRO:",
+    "• Sanidad animal: Scherer relata que Villalobos (Agricultura) defendió la inversión",
+    "  en sanidad animal, pero AMLO 'decía que eso no se necesitaba, que solo era",
+    "  un gastadero de dinero'. Villalobos advertía que sin sanidad bloquearían la",
+    "  frontera con EE.UU., 'y eso fue, finalmente, lo que sucedió' (pp. 121-122).",
+    "• Instituto de evaluación educativa (INEE): Scherer y Moctezuma plantearon",
+    "  conservar el instituto con expertos que 'analizaba los libros de texto, el",
+    "  material didáctico'. El presidente 'dijo que no era importante' y lo sustituyó",
+    "  por otro con gente que 'difícilmente eran expertos en educación' (pp. 129-130).",
+    "• Pandemia COVID-19: Capítulo extenso (pp. 169-176). Scherer critica duramente",
+    "  a López-Gatell por subestimar la enfermedad, impedir pruebas masivas, y",
+    "  contradecirse sobre el tapabocas. Reconoce que los militares y Sheinbaum",
+    "  hicieron buen trabajo frente al 'desastre' federal. Califica la decisión de",
+    "  proteger a López-Gatell como 'pésima' (fórmula 90% lealtad / 10% capacidad).",
+    "• Glifosato y maíz transgénico: Álvarez-Buylla (Conacyt), Jesús Ramírez y",
+    "  López-Gatell convencieron al presidente de prohibir el glifosato sin sustituto.",
+    "  El Conacyt 'no fue capaz de producir el producto sustituto. Ni siquiera se",
+    "  acercó.' Ramírez asesoró la defensa del T-MEC sin formación legal, provocando",
+    "  'un revés histórico para la soberanía alimentaria' (pp. 197-200).",
+    "",
     "NOTAS:",
     f"• Total de personas identificadas: {len(personas)}",
     "• Personas con opinión negativa (< 0): " + str(sum(1 for p in personas if p[2] < 0)),
@@ -765,6 +828,15 @@ methodology = [
     "• El personaje más extensamente tratado es Andrés Manuel López Obrador,",
     "  presente en prácticamente todas las páginas del libro.",
     "• Julio Scherer García (padre del autor) es el referente moral del libro.",
+    "",
+    "CAMBIOS EN v2 (atendiendo observaciones):",
+    "• Se agregó columna 'Peso narrativo' (Alta/Media/Baja) para distinguir",
+    "  protagonistas de personajes episódicos.",
+    "• Paulo Díez Gargari recalibrado de -5 a -3: personaje marginal (solo pp. 277-282).",
+    "• Se enriquecieron descripciones de antagonistas centrales (Ramírez Cuevas,",
+    "  Gertz Manero) para reflejar su presencia a lo largo de todo el libro.",
+    "• Se vincularon temas de política pública (sanidad animal, INEE, pandemia,",
+    "  glifosato) a los personajes correspondientes en sus descripciones.",
 ]
 
 title_font = Font(name="Calibri", bold=True, size=14)

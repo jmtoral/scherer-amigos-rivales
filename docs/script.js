@@ -63,19 +63,21 @@ svg.append("text")
 
 // --- Process Data for Simulation ---
 // Add initial x, y and radius
-// Radius based on page count
+// Radius based on actual page count (from pageCount field)
+const radiusScale = d3.scaleSqrt()
+    .domain([1, 300])  // 1 page to 300 (AMLO)
+    .range([4, 35]);
+
 const nodes = personasData.map((d, i) => {
-    // Rough estimate of mentions: split by commas + 1
-    const mentionCount = d.pages.toString().split(',').length;
-    // Base radius 5, max 15
-    const r = Math.min(5 + mentionCount * 1.5, 20);
+    const pc = d.pageCount || 1;
+    const r = radiusScale(pc);
 
     return {
         ...d,
-        ranking: i, // Derive ranking from array order
+        ranking: i,
         radius: r,
-        x: xScale(d.score), // Initial target x
-        y: height / 2       // Initial y
+        x: xScale(d.score),
+        y: height / 2
     };
 });
 
@@ -101,10 +103,11 @@ const nodeElements = svg.append("g")
     .append("circle")
     .attr("r", d => d.radius)
     .attr("fill", d => colorScale(d.score))
-    .attr("stroke", "white")
-    .attr("stroke-width", 2)
+    .attr("stroke", d => d.isCentral ? "#222" : "white")
+    .attr("stroke-width", d => d.isCentral ? 3 : 2)
+    .attr("stroke-dasharray", d => d.isCentral ? "5,3" : "none")
     .style("cursor", "pointer")
-    .attr("cx", d => d.x) // Start at computed pos
+    .attr("cx", d => d.x)
     .attr("cy", d => d.y)
     .style("filter", "drop-shadow(0px 3px 3px rgba(0,0,0,0.1))");
 
@@ -117,6 +120,11 @@ nodeElements
             .attr("r", d.radius * 1.5)
             .attr("stroke", "#333");
 
+        // Weight label
+        const pc = d.pageCount || 1;
+        const weightLabel = pc >= 15 ? "Alta" : pc >= 5 ? "Media" : "Baja";
+        const centralTag = d.isCentral ? ' <span style="color:#ff6b6b;font-weight:bold;">&#9670; Antagonista central</span>' : '';
+
         // Show tooltip
         tooltip.classed("hidden", false)
             .style("left", (event.pageX + 15) + "px")
@@ -124,9 +132,10 @@ nodeElements
             .html(`
                 <h3>${d.name}</h3>
                 <div class="meta">
-                    <span>${d.opinion} (${d.score})</span>
-                    <span>Rank: #${d.ranking + 1}</span>
+                    <span>${d.opinion} (${d.score > 0 ? '+' : ''}${d.score})</span>
+                    <span>${pc} pp. | Peso: ${weightLabel}</span>
                 </div>
+                ${centralTag}
                 <div class="desc">${d.description}</div>
             `);
     })
@@ -140,7 +149,7 @@ nodeElements
         d3.select(this)
             .transition().duration(200)
             .attr("r", d.radius)
-            .attr("stroke", "white");
+            .attr("stroke", d.isCentral ? "#222" : "white");
 
         tooltip.classed("hidden", true);
     });
@@ -151,6 +160,52 @@ simulation.on("tick", () => {
         .attr("cx", d => d.x)
         .attr("cy", d => d.y);
 });
+
+// --- Size & Antagonist Legend (inside SVG) ---
+const legendG = svg.append("g")
+    .attr("transform", `translate(${margin.left + 10}, ${height - 70})`);
+
+// Background rect for readability
+legendG.append("rect")
+    .attr("x", -10).attr("y", -18)
+    .attr("width", 460).attr("height", 60)
+    .attr("rx", 8)
+    .attr("fill", "rgba(255,255,255,0.85)")
+    .attr("stroke", "#e0e0e0").attr("stroke-width", 1);
+
+// Title
+legendG.append("text")
+    .attr("x", 0).attr("y", -2)
+    .attr("fill", "#666").attr("font-size", "13px").attr("font-weight", "bold")
+    .text("Tamaño = páginas dedicadas al personaje");
+
+// Small example circle
+legendG.append("circle")
+    .attr("cx", 10).attr("cy", 24)
+    .attr("r", 5).attr("fill", "#ccc").attr("stroke", "white").attr("stroke-width", 1);
+legendG.append("text")
+    .attr("x", 22).attr("y", 28)
+    .attr("fill", "#777").attr("font-size", "12px")
+    .text("Pocas pp.");
+
+// Large example circle
+legendG.append("circle")
+    .attr("cx", 110).attr("cy", 22)
+    .attr("r", 12).attr("fill", "#ccc").attr("stroke", "white").attr("stroke-width", 1);
+legendG.append("text")
+    .attr("x", 128).attr("y", 28)
+    .attr("fill", "#777").attr("font-size", "12px")
+    .text("Muchas pp.");
+
+// Antagonist central legend
+legendG.append("circle")
+    .attr("cx", 250).attr("cy", 22)
+    .attr("r", 10).attr("fill", "#ccc")
+    .attr("stroke", "#222").attr("stroke-width", 3).attr("stroke-dasharray", "5,3");
+legendG.append("text")
+    .attr("x", 266).attr("y", 28)
+    .attr("fill", "#777").attr("font-size", "12px").attr("font-weight", "600")
+    .text("Antagonista central del libro");
 
 // --- Search Functionality ---
 const searchBox = document.getElementById("search-box");
